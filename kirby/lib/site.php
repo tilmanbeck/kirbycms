@@ -9,6 +9,7 @@ class site extends obj {
   var $cacheEnabled = false;
   var $dataCacheEnabled = false;
   var $htmlCacheEnabled = false;
+  var $snippetCache = array();
     
   function __construct() {
               
@@ -204,6 +205,21 @@ class site extends obj {
       if($this->htmlCacheEnabled) cache::set($cacheID, (string)$html, true);
     } else {
       $html = $cacheData;
+    }
+    
+    // check for cacheless snippets and replace them all
+    if(preg_match_all('/{{snippet\.(.*)?}}/', $html, $matches, PREG_SET_ORDER)) {
+      
+      foreach($matches as $match) {
+        $key     = 'snippet.' . $match[1];
+        $cache   = f::read(cache::file('snippets/' . $key . '.php'));
+        $cache   = unserialize($cache);
+        $snippet = @$cache['snippet'];
+        $data    = @$cache['data'];
+        $result  = snippet($snippet, $data, true);
+        $html    = str_replace('{{' . $key . '}}', $result, $html);                      
+      }
+                  
     }
 
     die($html);

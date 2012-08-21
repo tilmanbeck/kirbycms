@@ -60,7 +60,47 @@ function notFound() {
 
 // embed a template snippet from the snippet folder
 function snippet($snippet, $data=array(), $return=false) {
+
+  // check for params
+  if(is_array($return)) {
+
+    $defaults = array(
+      'cache'  => true, 
+      'return' => false,
+    );
+
+    $options = array_merge($defaults, $return);
+    $return  = $options['return'];
+    
+    // chacheless snippet
+    if($options['cache'] === false) {
+
+      // create a unique key for this snippet
+      $key = 'snippet.' . sha1(serialize($data));
+      
+      // set the cache content      
+      $cache = array(
+        'snippet' => $snippet,
+        'data'    => $data
+      );
+      
+      // create the snippets cache dir      
+      dir::make(cache::file('snippets'));            
+
+      // store the params until they get replaced in the site class
+      f::write(cache::file('snippets/' . $key . '.php'), serialize($cache));
+      
+      // return the unique string, which gets replaced later
+      $html = '{{' . $key . '}}';            
+      if($return) return $html;
+      echo $html;
+      return true;
+    }    
+    
+  }
+
   return tpl::loadFile(c::get('root.snippets') . '/' . $snippet . '.php', $data, $return);
+
 }
 
 // embed a stylesheet tag
