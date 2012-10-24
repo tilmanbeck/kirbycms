@@ -1,0 +1,8 @@
+<?php snippet('header') ?>
+<?php snippet('menu') ?>
+<?php snippet('submenu') ?>
+<?php
+$dirname = $page->children();
+ snippet('sidemenu', array('dirname'=> $dirname));
+?>
+

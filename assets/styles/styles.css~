@@ -73,7 +73,7 @@ div.sidemenu{
 }
 
 div.counter {
-	right: 50px;
+	right: 40px;
 	top: 30px;
 	position: absolute;
 	
